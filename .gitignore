@@ -1,0 +1,24 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Environment variables (credentials)
+.env
+
+# Flask
+instance/
+
+# Uploads (imagens de capas)
+static/uploads/capas/*
+!static/uploads/capas/.gitkeep
+
+# Database local
+*.db
+*.sqlite
+
+# Migrations (não versionar para iniciar zerado)
+migrations/
+
+# IDE
+.vscode/
+.idea/
