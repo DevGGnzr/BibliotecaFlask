@@ -1,0 +1,71 @@
+{%extends 'base.html' %}
+
+{% block title %}Editar Livro - Sistema de Biblioteca{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">
+                    <i class="bi bi-book-fill"></i> Editar Livro
+                </h1>
+                
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="titulo" class="form-label">Título: <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="titulo" name="titulo" value="{{ livro.titulo }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="autor" class="form-label">Autor: <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="autor" name="autor" value="{{ livro.autor }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="isbn" class="form-label">ISBN: <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="isbn" name="isbn" value="{{ livro.isbn }}" placeholder="Ex: 978-3-16-148410-0" required>
+                        <small class="form-text text-muted">Deve conter 10 ou 13 dígitos</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="ano_publicacao" class="form-label">Ano de Publicação: <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="ano_publicacao" name="ano_publicacao" value="{{ livro.ano_publicacao }}" min="1000" max="2100" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="categoria" class="form-label">Categoria: <span class="text-danger">*</span></label>
+                        <select class="form-select" id="categoria" name="categoria" required>
+                            <option value="Ficção" {% if livro.categoria == 'Ficção' %}selected{% endif %}>Ficção</option>
+                            <option value="Não-Ficção" {% if livro.categoria == 'Não-Ficção' %}selected{% endif %}>Não-Ficção</option>
+                            <option value="Romance" {% if livro.categoria == 'Romance' %}selected{% endif %}>Romance</option>
+                            <option value="Mistério" {% if livro.categoria == 'Mistério' %}selected{% endif %}>Mistério</option>
+                            <option value="Técnico" {% if livro.categoria == 'Técnico' %}selected{% endif %}>Técnico</option>
+                            <option value="Biografia" {% if livro.categoria == 'Biografia' %}selected{% endif %}>Biografia</option>
+                            <option value="História" {% if livro.categoria == 'História' %}selected{% endif %}>História</option>
+                            <option value="Ciência" {% if livro.categoria == 'Ciência' %}selected{% endif %}>Ciência</option>
+                            <option value="Fantasia" {% if livro.categoria == 'Fantasia' %}selected{% endif %}>Fantasia</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="capa" class="form-label">Alterar Imagem da Capa (opcional):</label>
+                        {% if livro.capa_url %}
+                            <div class="mb-2">
+                                <img src="{{ url_for('static', filename='uploads/capas/' + livro.capa_url) }}" alt="Capa atual" class="img-thumbnail" style="max-width: 200px;">
+                                <p class="text-muted small mt-1">Capa atual</p>
+                            </div>
+                        {% endif %}
+                        <input type="file" class="form-control" id="capa" name="capa" accept="image/png, image/jpeg, image/jpg">
+                        <small class="form-text text-muted">Formatos: PNG, JPG ou JPEG (máx. 5MB). Deixe em branco para manter a capa atual.</small>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-arrow-clockwise"></i> Atualizar Livro
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+{% endblock %}
