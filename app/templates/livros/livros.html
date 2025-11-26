@@ -36,11 +36,11 @@
                             {% for livro in livros %}
                                 <tr>
                                     <td>
-                                        {% if livro.capa_url %}
-                                            <img src="{{ url_for('static', filename='uploads/capas/' + livro.capa_url) }}" alt="{{ livro.titulo }}" class="img-thumbnail" style="max-width: 60px; max-height: 80px; object-fit: cover;">
-                                        {% else %}
-                                            <i class="bi bi-book-half text-muted" style="font-size: 2rem;"></i>
-                                        {% endif %}
+                                        {% if livro.capa_dados %}
+    <img src="{{ url_for('capa_livro', id=livro.id) }}" alt="{{ livro.titulo }}" class="img-thumbnail" style="max-width: 60px; max-height: 80px; object-fit: cover;">
+{% else %}
+    <i class="bi bi-book-half text-muted" style="font-size: 2rem;"></i>
+{% endif %}
                                     </td>
                                     <td><strong>{{ livro.titulo }}</strong></td>
                                     <td>{{ livro.autor }}</td>

@@ -1,9 +1,10 @@
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, flash, send_file, abort
 from werkzeug.utils import secure_filename
 from app import app, db
 from app.models.models import Livro
 import os
 import time
+import io
 
 # Função para verificar extensão de arquivo
 def allowed_file(filename):
@@ -52,22 +53,19 @@ def create_livro():
             return redirect(url_for('create_livro'))
         
         # Processar upload de imagem
-        capa_filename = None
+        capa_dados = None
+        capa_tipo = None
         if 'capa' in request.files:
             file = request.files['capa']
             if file and file.filename and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                # Adicionar timestamp para evitar conflitos
-                timestamp = str(int(time.time()))
-                name, ext = os.path.splitext(filename)
-                capa_filename = f"{name}_{timestamp}{ext}"
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], capa_filename))
+                capa_dados = file.read()
+                capa_tipo = file.mimetype
             elif file and file.filename and not allowed_file(file.filename):
                 flash('Formato de imagem inválido! Use PNG, JPG ou JPEG.', 'warning')
         
         new_livro = Livro(titulo=titulo, autor=autor, isbn=isbn, 
                          ano_publicacao=ano, categoria=categoria,
-                         capa_url=capa_filename)
+                         capa_dados=capa_dados, capa_tipo=capa_tipo)
         db.session.add(new_livro)
         db.session.commit()
         flash(f'Livro "{titulo}" cadastrado com sucesso!', 'success')
@@ -118,19 +116,8 @@ def update_livro(id):
         if 'capa' in request.files:
             file = request.files['capa']
             if file and file.filename and allowed_file(file.filename):
-                # Deletar imagem antiga se existir
-                if livro.capa_url:
-                    old_file = os.path.join(app.config['UPLOAD_FOLDER'], livro.capa_url)
-                    if os.path.exists(old_file):
-                        os.remove(old_file)
-                
-                # Salvar nova imagem
-                filename = secure_filename(file.filename)
-                timestamp = str(int(time.time()))
-                name, ext = os.path.splitext(filename)
-                capa_filename = f"{name}_{timestamp}{ext}"
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], capa_filename))
-                livro.capa_url = capa_filename
+                livro.capa_dados = file.read()
+                livro.capa_tipo = file.mimetype
             elif file and file.filename and not allowed_file(file.filename):
                 flash('Formato de imagem inválido! Use PNG, JPG ou JPEG.', 'warning')
         
@@ -145,6 +132,16 @@ def update_livro(id):
     
     return render_template('livros/update_livro.html', livro=livro)
 
+@app.route('/capa_livro/<int:id>')
+def capa_livro(id):
+    livro=Livro.query.get_or_404(id)
+    if livro.capa_dados and livro.capa_tipo:
+        return send_file(
+            io.BytesIO(livro.capa_dados),
+            mimetype=livro.capa_tipo,
+    )
+    else:
+        abort(404)
 @app.route('/delete_livro/<int:id>')
 def delete_livro(id):
     """Deletar um livro"""

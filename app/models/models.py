@@ -9,7 +9,8 @@ class Livro(db.Model):
     isbn = db.Column(db.String(20), unique=True, nullable=False)
     ano_publicacao = db.Column(db.Integer, nullable=False)
     categoria = db.Column(db.String(100), nullable=False)
-    capa_url = db.Column(db.String(500), nullable=True)
+    capa_dados = db.Column(db.LargeBinary, nullable=True)
+    capa_tipo = db.Column(db.String(50), nullable=True)
 
     def __repr__(self):
         return f'<Livro {self.titulo}>'
