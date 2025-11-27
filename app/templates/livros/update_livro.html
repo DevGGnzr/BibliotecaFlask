@@ -52,9 +52,9 @@
 
     <div class="mb-3">
         <label for="capa" class="form-label">Alterar Imagem da Capa (opcional):</label>
-        {% if livro.capa_url %}
+        {% if livro.capa_dados %}
         <div class="mb-2">
-            <img src="{{ url_for('static', filename='uploads/capas/' + livro.capa_url) }}" alt="Capa atual"
+            <img src="{{ url_for('capa_livro', id=livro.id) }}" alt="Capa atual"
                 class="img-thumbnail" style="max-width: 200px;">
             <p class="text-muted small mt-1">Capa atual</p>
         </div>

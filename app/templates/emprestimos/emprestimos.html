@@ -56,8 +56,8 @@
                                         {% for livro in emprestimo.livros %}
                                         <div class="col-md-6">
                                             <div class="d-flex align-items-center border rounded p-2">
-                                                {% if livro.capa_url %}
-                                                <img src="{{ url_for('static', filename='uploads/capas/' + livro.capa_url) }}"
+                                                {% if livro.capa_dados %}
+                                                <img src="{{ url_for('capa_livro', id=livro.id) }}"
                                                     alt="{{ livro.titulo }}" class="img-thumbnail me-2"
                                                     style="max-width: 50px; max-height: 70px; object-fit: cover;">
                                                 {% else %}
