@@ -7,27 +7,28 @@
 {% endblock %}
 
 {% block content %}
-<h1 class="mb-4">
-                    <i class="bi bi-person-gear"></i> Editar Usuário
-                </h1>
-                
-                <form method="POST">
-                    <div class="mb-3">
-                        <label for="nome" class="form-label">Nome: <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="nome" name="nome" value="{{ usuario.nome }}" required>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email: <span class="text-danger">*</span></label>
-                        <input type="email" class="form-control" id="email" name="email" value="{{ usuario.email }}" placeholder="exemplo@email.com" required>
-                    </div>
-                    
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-success">
-                            <i class="bi bi-arrow-clockwise"></i> Atualizar Usuário
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+<h1 class="mb-4" style="color: #6C0B18;">
+    <i class="bi bi-person-gear" style="color: #6C0B18;"></i> Editar Usuário
+</h1>
+
+<form method="POST">
+    <div class="mb-3">
+        <label for="nome" class="form-label">Nome: <span class="text-danger">*</span></label>
+        <input type="text" class="form-control" id="nome" name="nome" value="{{ usuario.nome }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="email" class="form-label">Email: <span class="text-danger">*</span></label>
+        <input type="email" class="form-control" id="email" name="email" value="{{ usuario.email }}"
+            placeholder="exemplo@email.com" required>
+    </div>
+
+    <div class="d-grid gap-2">
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-arrow-clockwise"></i> Atualizar Usuário
+        </button>
+    </div>
+</form>
+</div>
+</div>
 {% endblock %}
