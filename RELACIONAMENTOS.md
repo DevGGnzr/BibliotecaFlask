@@ -24,7 +24,8 @@
 └─────────────────┘          └──────────────────────┘          │ isbn (UNIQUE)   │
                                                                │ ano_publicacao  │
                                                                │ categoria       │
-                                                               │ capa_url        │
+                                                               │ capa_dados      │
+                                                               │ capa_tipo       │
                                                                └─────────────────┘
 
 Legenda:
@@ -61,7 +62,8 @@ N = Muitos
 - `isbn` (VARCHAR(20), UNIQUE, NOT NULL): Código ISBN único do livro
 - `ano_publicacao` (INTEGER, NOT NULL): Ano de publicação
 - `categoria` (VARCHAR(100), NOT NULL): Categoria/gênero do livro
-- `capa_url` (VARCHAR(500), NULL): Nome do arquivo da imagem da capa
+- `capa_dados` (BYTEA, NULL): Dados binários da imagem da capa armazenados no banco
+- `capa_tipo` (VARCHAR(50), NULL): Tipo MIME da imagem (ex: image/jpeg, image/png)
 
 **Constraints:**
 - Primary Key: `id`

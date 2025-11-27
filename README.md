@@ -17,7 +17,9 @@ Este é um sistema web para gerenciamento de biblioteca que permite cadastrar li
 - **Integridade Referencial:** Proteção contra exclusão de registros vinculados
 - **Interface:** Bootstrap 5 com ícones e responsividade
 - **Template Base:** Reutilização de código com herança de templates
-- **Mensagens Flash:** Feedback visual de sucesso e erro
+- **Mensagens Flash:** Feedback visual de sucesso e erro com categorias
+- **Upload de Imagens:** Armazenamento de capas direto no banco de dados (BYTEA)
+- **Exportação PDF:** Geração de relatórios em PDF com xhtml2pdf
 - **PostgreSQL:** Banco de dados relacional robusto
 - **Migrações:** Controle de versão do banco com Alembic
 
@@ -64,11 +66,15 @@ BIBLIOTECA-FLASK/
 │   │   └── emprestimos/
 │   │       ├── emprestimos.html
 │   │       ├── create_emprestimo.html
-│   │       └── update_emprestimo.html
+│   │       ├── update_emprestimo.html
+│   │       └── emprestimos_pdf.html    # Template PDF de empréstimos
+│   │
+│   ├── utils/                  # ⭐ Utilitários
+│   │   └── pdf_utils.py        # Geração de PDFs
 │   │
 │   └── static/                 # Arquivos estáticos
 │       └── uploads/
-│           └── capas/          # Upload de capas de livros
+│           └── capas/          # (Não usado - imagens no banco)
 │
 └── migrations/                 # Migrações do banco de dados
     ├── alembic.ini
@@ -174,7 +180,8 @@ O sistema estará disponível em: **http://localhost:5000**
 - **Adicionar Livro:** Cadastre novos livros com título, autor, ISBN, ano, categoria e capa (upload de imagem)
 - **Editar Livro:** Atualize informações de livros existentes e altere a capa
 - **Excluir Livro:** Remove livros (apenas se não estiverem em empréstimos ativos)
-- **Upload de Capas:** Faça upload de imagens das capas dos livros (PNG, JPG, JPEG - máx. 5MB)
+- **Upload de Capas:** Faça upload de imagens das capas dos livros armazenadas no banco (PNG, JPG, JPEG - máx. 5MB)
+- **Exportar PDF:** Gere relatórios em PDF de todos os livros cadastrados
 
 **Validações:**
 - ISBN único (10 ou 13 dígitos)
@@ -189,6 +196,7 @@ O sistema estará disponível em: **http://localhost:5000**
 - **Adicionar Usuário:** Cadastre novos usuários com nome e email
 - **Editar Usuário:** Atualize informações de usuários
 - **Excluir Usuário:** Remove usuários (apenas se não tiverem empréstimos ativos)
+- **Exportar PDF:** Gere relatórios em PDF de todos os usuários
 
 **Validações:**
 - Email único e formato válido
@@ -200,6 +208,7 @@ O sistema estará disponível em: **http://localhost:5000**
 - **Criar Empréstimo:** Registre novos empréstimos selecionando usuário e livros
 - **Editar Empréstimo:** Atualize empréstimos existentes
 - **Excluir Empréstimo:** Remove empréstimos
+- **Exportar PDF:** Gere relatórios em PDF de todos os empréstimos
 
 **Validações:**
 - Número de empréstimo único
@@ -224,6 +233,7 @@ O sistema impede:
 - **PostgreSQL** - Banco de dados relacional
 - **psycopg2-binary 2.9.11** - Adaptador PostgreSQL para Python
 - **python-dotenv 1.1.1** - Gerenciamento de variáveis de ambiente
+- **xhtml2pdf 0.2.16** - Geração de arquivos PDF a partir de HTML/CSS
 
 ### Frontend
 - **Bootstrap 5.3.0** - Framework CSS responsivo
@@ -242,7 +252,8 @@ O sistema impede:
 - isbn (string, único, obrigatório)
 - ano_publicacao (integer, obrigatório)
 - categoria (string, obrigatório)
-- capa_url (string, opcional) # Nome do arquivo da capa
+- capa_dados (LargeBinary, opcional) # Bytes da imagem no banco
+- capa_tipo (string, opcional) # MIME type da imagem
 ```
 
 #### 2. Usuario
