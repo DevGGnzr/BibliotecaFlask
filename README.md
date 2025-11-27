@@ -204,16 +204,19 @@ O sistema estará disponível em: **http://localhost:5000**
 
 ### 3. Gerenciamento de Empréstimos
 
-- **Listar Empréstimos:** Visualize todos os empréstimos com usuários e livros
-- **Criar Empréstimo:** Registre novos empréstimos selecionando usuário e livros
+- **Listar Empréstimos:** Visualize todos os empréstimos com usuários, livros e datas
+- **Criar Empréstimo:** Registre novos empréstimos selecionando usuário, livros e prazo de devolução
 - **Editar Empréstimo:** Atualize empréstimos existentes
 - **Excluir Empréstimo:** Remove empréstimos
-- **Exportar PDF:** Gere relatórios em PDF de todos os empréstimos
+- **Controle de Datas:** Data de empréstimo registrada automaticamente, prazo de devolução definido manualmente
+- **Exportar PDF:** Gere relatórios em PDF de todos os empréstimos incluindo datas
 
 **Validações:**
 - Número de empréstimo único
 - Usuário obrigatório
 - Pelo menos um livro selecionado
+- Data de devolução obrigatória
+- Data de devolução não pode ser anterior à data atual
 
 ### 4. Proteção de Integridade Referencial
 
@@ -268,6 +271,8 @@ O sistema impede:
 - id (PK, autoincrement)
 - numero_emprestimo (string, único, obrigatório)
 - usuario_id (FK → usuarios.id, obrigatório)
+- data_emprestimo (datetime, obrigatório, default=now)
+- data_devolucao (date, obrigatório)
 - livros (relacionamento N:N via emprestimo_livro)
 ```
 

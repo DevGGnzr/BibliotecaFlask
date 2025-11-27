@@ -31,6 +31,8 @@
                     <tr>
                         <th>Número</th>
                         <th>Usuário</th>
+                        <th>Data Empréstimo</th>
+                        <th>Data Devolução</th>
                         <th>Livros Emprestados</th>
                         <th>Ações</th>
                     </tr>
@@ -41,6 +43,12 @@
                         <td><strong>{{ emprestimo.numero_emprestimo }}</strong></td>
                         <td>
                             <i class="bi bi-person-badge-fill"></i> {{ emprestimo.usuario.nome }}
+                        </td>
+                        <td>
+                            <i class="bi bi-calendar-event"></i> {{ emprestimo.data_emprestimo.strftime('%d/%m/%Y') if emprestimo.data_emprestimo else '-' }}
+                        </td>
+                        <td>
+                            <i class="bi bi-calendar-check"></i> {{ emprestimo.data_devolucao.strftime('%d/%m/%Y') if emprestimo.data_devolucao else '-' }}
                         </td>
                         <td>
                             <span class="badge"

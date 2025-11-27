@@ -1,4 +1,5 @@
 from app import db
+from datetime import datetime
 
 class Livro(db.Model):
     __tablename__ = 'livros'
@@ -37,6 +38,8 @@ class Emprestimo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     numero_emprestimo = db.Column(db.String(50), nullable=False, unique=True)
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
+    data_emprestimo = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    data_devolucao = db.Column(db.Date, nullable=False)
     
     # Relacionamento muitos-para-um com usuários
     usuario = db.relationship('Usuario', backref='emprestimos')

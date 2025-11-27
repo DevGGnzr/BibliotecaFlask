@@ -772,6 +772,209 @@ O atributo `target="_blank"` faz o PDF abrir em nova aba, melhorando a experiên
 
 ---
 
+## PROMPT 11: Controle de Datas em Empréstimos (Data do Empréstimo e Prazo de Devolução)
+
+**Pergunta:**
+> "Como adicionar campos de data em empréstimos para registrar quando o empréstimo foi feito e qual o prazo para devolução dos livros?"
+
+**Resposta da IA:**
+A IA apresentou três abordagens para adicionar controle de datas em empréstimos:
+
+**Opção 1: Apenas Data de Devolução**
+- Adicionar campo `data_devolucao` (Date)
+- Usuário define manualmente o prazo
+- Simples mas requer cálculo manual de prazos
+
+**Opção 2: Data Automática + Prazo de Devolução**
+- Campo `data_emprestimo` (DateTime) com `default=datetime.utcnow`
+- Campo `data_devolucao` (Date) inserido manualmente
+- Registra automaticamente quando foi criado
+- Melhor para auditoria e histórico
+
+**Opção 3: Data Automática + Cálculo Automático de Prazo**
+- Campo `data_emprestimo` (DateTime) automático
+- Campo `prazo_dias` (Integer) configurável
+- Calcular `data_devolucao` automaticamente usando `timedelta`
+- Mais automático mas menos flexível
+
+A IA recomendou Opção 2 como balanço entre automação e flexibilidade, permitindo registrar quando foi feito e definir prazo personalizado por empréstimo.
+
+**Análise Crítica:**
+**Escolhemos Opção 2 (data automática + prazo manual)** pelos seguintes motivos:
+
+1. **Auditoria completa:** `data_emprestimo` registra automaticamente momento exato da criação
+2. **Flexibilidade:** Bibliotecário pode definir prazos diferentes (7 dias para livros comuns, 14 para pesquisa, etc.)
+3. **Histórico:** Permite calcular tempo real de empréstimo e identificar atrasos
+4. **Simplicidade:** Não requer configuração de regras complexas de prazo por categoria
+
+**Desafios Enfrentados:**
+
+| Problema | Solução Aplicada |
+|----------|------------------|
+| Migration com NOT NULL em tabela populada | Inicialmente usar `nullable=True`, depois criar migração para tornar `nullable=False` |
+| Erro "Can't locate revision" no Alembic | Resetar tabela `alembic_version` e recriar migrations |
+| Validação de data obrigatória | Adicionar validação no controller antes de salvar |
+| Templates sem campo de data | Adicionar `<input type="date">` nos formulários |
+| Data de devolução no passado | Validação backend e frontend com `min="{{ today }}"` |
+
+**Trade-offs Conscientes:**
+- ✅ **Escolhido:** Campos obrigatórios (NOT NULL) após garantir todos os registros têm datas
+- ❌ **Rejeitado:** Cálculo automático de prazo (cada empréstimo pode ter necessidade diferente)
+- ✅ **Escolhido:** `datetime.utcnow` para timestamp preciso (não apenas data)
+- ✅ **Escolhido:** Validação dupla (backend + frontend) para data mínima
+
+**Aplicação no Projeto:**
+
+1. **Model (`models.py`):**
+```python
+from datetime import datetime
+
+class Emprestimo(db.Model):
+    # ... campos existentes
+    data_emprestimo = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    data_devolucao = db.Column(db.Date, nullable=False)
+```
+
+2. **Controller (`emprestimo_controller.py`):**
+```python
+from datetime import datetime, timedelta
+
+# No create_emprestimo
+data_devolucao = request.form.get('data_devolucao')
+
+if not data_devolucao:
+    flash('Data de devolução é obrigatória!', 'danger')
+    return redirect(url_for('create_emprestimo'))
+
+# Validar data de devolução não pode ser anterior à data atual
+try:
+    data_dev = datetime.strptime(data_devolucao, '%Y-%m-%d').date()
+    if data_dev < datetime.now().date():
+        flash('Data de devolução não pode ser anterior à data atual!', 'danger')
+        return redirect(url_for('create_emprestimo'))
+except ValueError:
+    flash('Data de devolução inválida!', 'danger')
+    return redirect(url_for('create_emprestimo'))
+
+new_emprestimo = Emprestimo(
+    numero_emprestimo=numero_emprestimo,
+    usuario_id=usuario_id,
+    data_devolucao=datetime.strptime(data_devolucao, '%Y-%m-%d').date()
+)
+```
+
+3. **Templates:**
+
+**create_emprestimo.html:**
+```html
+<div class="mb-3">
+    <label for="data_devolucao" class="form-label">Data de Devolução: <span class="text-danger">*</span></label>
+    <input type="date" class="form-control" id="data_devolucao" name="data_devolucao" 
+           min="{{ today }}" required>
+    <small class="form-text text-muted">Data prevista para devolução dos livros (não pode ser anterior a hoje).</small>
+</div>
+```
+
+**update_emprestimo.html:**
+```html
+<input type="date" class="form-control" id="data_devolucao" name="data_devolucao" 
+       min="{{ today }}"
+       value="{{ emprestimo.data_devolucao.strftime('%Y-%m-%d') if emprestimo.data_devolucao else '' }}" required>
+```
+
+**Controller passando data atual:**
+```python
+return render_template('emprestimos/create_emprestimo.html', 
+                      usuarios=usuarios, livros=livros, 
+                      today=datetime.now().strftime('%Y-%m-%d'))
+```
+
+**emprestimos.html (listagem):**
+```html
+<thead class="table-primary">
+    <tr>
+        <th>Número</th>
+        <th>Usuário</th>
+        <th>Data Empréstimo</th>
+        <th>Data Devolução</th>
+        <th>Livros Emprestados</th>
+        <th>Ações</th>
+    </tr>
+</thead>
+<tbody>
+    <tr>
+        <td>{{ emprestimo.numero_emprestimo }}</td>
+        <td>{{ emprestimo.usuario.nome }}</td>
+        <td>{{ emprestimo.data_emprestimo.strftime('%d/%m/%Y') if emprestimo.data_emprestimo else '-' }}</td>
+        <td>{{ emprestimo.data_devolucao.strftime('%d/%m/%Y') if emprestimo.data_devolucao else '-' }}</td>
+        <!-- ... -->
+    </tr>
+</tbody>
+```
+
+4. **Migration com Dados Existentes:**
+
+Como já existiam empréstimos cadastrados, enfrentamos erro de integridade ao tentar adicionar colunas NOT NULL. Solução aplicada em duas etapas:
+
+**Etapa 1:** Adicionar campos como nullable temporariamente:
+```python
+# Campos temporariamente nullable para permitir migração
+data_emprestimo = db.Column(db.DateTime, nullable=True, default=datetime.utcnow)
+data_devolucao = db.Column(db.Date, nullable=True)
+```
+
+**Comandos executados (Etapa 1):**
+```bash
+# Resetar controle de versão (devido a erro de revision)
+python reset_migrations.py  # Remove tabela alembic_version
+
+# Criar nova migration
+flask db migrate -m "adicionar campos de data em emprestimos"
+
+# Aplicar ao banco
+flask db upgrade
+```
+
+**Etapa 2:** Após garantir que todos os empréstimos têm datas, tornar campos obrigatórios:
+```python
+# Campos finais como NOT NULL (obrigatórios)
+data_emprestimo = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+data_devolucao = db.Column(db.Date, nullable=False)
+```
+
+**Comandos executados (Etapa 2):**
+```bash
+# Criar migration para tornar campos NOT NULL
+flask db migrate -m "tornar campos de data obrigatorios"
+
+# Aplicar ao banco
+flask db upgrade
+```
+
+5. **PDF Export Atualizado:**
+
+Template `emprestimos_pdf.html` também foi atualizado para incluir as datas:
+
+```html
+<th style="width: 10%; text-align: center;">Data Emp.</th>
+<th style="width: 10%; text-align: center;">Data Dev.</th>
+
+<td>{{ emprestimo.data_emprestimo.strftime('%d/%m/%Y') if emprestimo.data_emprestimo else '-' }}</td>
+<td>{{ emprestimo.data_devolucao.strftime('%d/%m/%Y') if emprestimo.data_devolucao else '-' }}</td>
+```
+
+**Recursos Futuros Possíveis:**
+Com essa base, seria fácil adicionar posteriormente:
+- 🔔 Alertas de empréstimos próximos ao vencimento
+- 📊 Relatório de atrasos (comparar `data_devolucao` com data atual)
+- 📈 Estatísticas de tempo médio de empréstimo
+- 🏆 Ranking de livros mais emprestados por período
+
+**Decisão de Design:**
+Mantivemos o prazo como entrada manual em vez de calculado porque diferentes tipos de empréstimo podem ter prazos diferentes (livros didáticos vs literatura, professores vs alunos). Isso dá flexibilidade à biblioteca para definir políticas personalizadas por empréstimo.
+
+---
+
 ## Conclusão
 
 O uso de Inteligência Artificial durante o desenvolvimento do projeto foi fundamental para acelerar o aprendizado e resolver problemas técnicos. Porém, foi essencial manter uma postura crítica, testando todas as sugestões, identificando limitações e adaptando as soluções ao contexto específico do projeto. A IA serviu como ferramenta de apoio, mas a compreensão e as decisões finais foram responsabilidade dos desenvolvedores.

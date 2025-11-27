@@ -97,21 +97,25 @@
     <table>
         <thead>
             <tr>
-                <th style="width: 15%;">Nº Empréstimo</th>
-                <th style="width: 22%;">Usuário</th>
-                <th style="width: 25%;">Email</th>
-                <th style="width: 10%; text-align: center;">Qtd.</th>
-                <th style="width: 28%;">Livros Emprestados</th>
+                <th style="width: 12%;">Nº Empréstimo</th>
+                <th style="width: 18%;">Usuário</th>
+                <th style="width: 18%;">Email</th>
+                <th style="width: 10%; text-align: center;">Data Emp.</th>
+                <th style="width: 10%; text-align: center;">Data Dev.</th>
+                <th style="width: 8%; text-align: center;">Qtd.</th>
+                <th style="width: 24%;">Livros Emprestados</th>
             </tr>
         </thead>
         <tbody>
             {% for emprestimo in emprestimos %}
             <tr>
-                <td style="width: 15%;">{{ emprestimo.numero_emprestimo }}</td>
-                <td style="width: 22%;">{{ emprestimo.usuario.nome }}</td>
-                <td style="width: 25%;">{{ emprestimo.usuario.email }}</td>
-                <td style="width: 10%; text-align: center;">{{ emprestimo.livros|length }}</td>
-                <td style="width: 28%;">
+                <td style="width: 12%;">{{ emprestimo.numero_emprestimo }}</td>
+                <td style="width: 18%;">{{ emprestimo.usuario.nome }}</td>
+                <td style="width: 18%;">{{ emprestimo.usuario.email }}</td>
+                <td style="width: 10%; text-align: center;">{{ emprestimo.data_emprestimo.strftime('%d/%m/%Y') if emprestimo.data_emprestimo else '-' }}</td>
+                <td style="width: 10%; text-align: center;">{{ emprestimo.data_devolucao.strftime('%d/%m/%Y') if emprestimo.data_devolucao else '-' }}</td>
+                <td style="width: 8%; text-align: center;">{{ emprestimo.livros|length }}</td>
+                <td style="width: 24%;">
                     {% if emprestimo.livros %}
                         <ul class="livros-lista">
                             {% for livro in emprestimo.livros %}

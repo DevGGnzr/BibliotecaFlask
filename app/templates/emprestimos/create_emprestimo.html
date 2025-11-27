@@ -74,6 +74,13 @@
         </div>
     </div>
 
+    <div class="mb-3">
+        <label for="data_devolucao" class="form-label">Data de Devolução: <span class="text-danger">*</span></label>
+        <input type="date" class="form-control" id="data_devolucao" name="data_devolucao" 
+               min="{{ today }}" required>
+        <small class="form-text text-muted">Data prevista para devolução dos livros (não pode ser anterior a hoje).</small>
+    </div>
+
     <div class="d-grid gap-2">
         <button type="submit" class="btn btn-primary" {% if not usuarios or not livros %}disabled{% endif %}>
             <i class="bi bi-save-fill"></i> Criar Empréstimo

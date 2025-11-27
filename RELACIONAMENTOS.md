@@ -21,7 +21,9 @@
 │ id (PK)         │   1    N ├──────────────────────┤  N    1  │ id (PK)         │
 │ numero_emprest..│◄─────────┤ emprestimo_id (FK,PK)├─────────►│ titulo          │
 │ usuario_id (FK) │          │ livro_id (FK,PK)     │          │ autor           │
-└─────────────────┘          └──────────────────────┘          │ isbn (UNIQUE)   │
+│ data_emprestimo │          └──────────────────────┘          │ isbn (UNIQUE)   │
+│ data_devolucao  │                                            │ ano_publicacao  │
+└─────────────────┘                                            │ categoria       │
                                                                │ ano_publicacao  │
                                                                │ categoria       │
                                                                │ capa_dados      │
@@ -78,11 +80,14 @@ N = Muitos
 - `id` (INTEGER, PK): Identificador único do empréstimo (autoincremento)
 - `numero_emprestimo` (VARCHAR(50), UNIQUE, NOT NULL): Número de controle do empréstimo
 - `usuario_id` (INTEGER, FK, NOT NULL): Referência ao usuário que fez o empréstimo
+- `data_emprestimo` (TIMESTAMP, NOT NULL, DEFAULT=now): Data e hora em que o empréstimo foi criado
+- `data_devolucao` (DATE, NOT NULL): Data prevista para devolução dos livros
 
 **Constraints:**
 - Primary Key: `id`
 - Foreign Key: `usuario_id` REFERENCES `usuarios(id)`
 - Unique: `numero_emprestimo`
+- Check: `data_devolucao` não pode ser anterior à data atual (validação no controller)
 
 ---
 
@@ -187,6 +192,8 @@ O relacionamento N:N é necessário porque:
 - Número do empréstimo deve ser único
 - Deve referenciar um usuário existente
 - Deve ter ao menos um livro associado
+- Data de empréstimo é registrada automaticamente no momento da criação
+- Data de devolução é obrigatória e não pode ser anterior à data atual
 
 ---
 
@@ -211,6 +218,7 @@ O relacionamento N:N é necessário porque:
    Número: EMP-001
    Usuário: João Silva
    Livros: "1984" + "O Hobbit"
+   Data de Devolução: 10/12/2025
    ```
 
 4. **Resultado no Banco:**
@@ -223,7 +231,8 @@ O relacionamento N:N é necessário porque:
    id=2, titulo="O Hobbit", isbn="978-0547928227"
    
    Tabela EMPRESTIMOS:
-   id=1, numero_emprestimo="EMP-001", usuario_id=1
+   id=1, numero_emprestimo="EMP-001", usuario_id=1,
+   data_emprestimo="2025-11-27 10:30:00", data_devolucao="2025-12-10"
    
    Tabela EMPRESTIMO_LIVRO:
    emprestimo_id=1, livro_id=1

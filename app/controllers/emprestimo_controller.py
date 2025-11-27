@@ -2,7 +2,7 @@ from flask import render_template, request, redirect, url_for, flash
 from app import app, db
 from app.models.models import Emprestimo, Usuario, Livro
 from app.utils.pdf_utils import generate_pdf
-from datetime import datetime
+from datetime import datetime, timedelta, timedelta
 
 @app.route('/')
 def index():
@@ -22,6 +22,7 @@ def create_emprestimo():
         numero_emprestimo = request.form['numero_emprestimo'].strip()
         usuario_id = request.form.get('usuario')
         livro_ids = request.form.getlist('livros')
+        data_devolucao = request.form.get('data_devolucao')
         
         # Validações
         if not numero_emprestimo:
@@ -42,6 +43,26 @@ def create_emprestimo():
             livros = Livro.query.all()
             return render_template('emprestimos/create_emprestimo.html', usuarios=usuarios, livros=livros)
         
+        if not data_devolucao:
+            flash('Data de devolução é obrigatória!', 'danger')
+            usuarios = Usuario.query.all()
+            livros = Livro.query.all()
+            return render_template('emprestimos/create_emprestimo.html', usuarios=usuarios, livros=livros)
+        
+        # Validar data de devolução não pode ser anterior à data atual
+        try:
+            data_dev = datetime.strptime(data_devolucao, '%Y-%m-%d').date()
+            if data_dev < datetime.now().date():
+                flash('Data de devolução não pode ser anterior à data atual!', 'danger')
+                usuarios = Usuario.query.all()
+                livros = Livro.query.all()
+                return render_template('emprestimos/create_emprestimo.html', usuarios=usuarios, livros=livros)
+        except ValueError:
+            flash('Data de devolução inválida!', 'danger')
+            usuarios = Usuario.query.all()
+            livros = Livro.query.all()
+            return render_template('emprestimos/create_emprestimo.html', usuarios=usuarios, livros=livros)
+        
         # Verificar número duplicado
         if Emprestimo.query.filter_by(numero_emprestimo=numero_emprestimo).first():
             flash('Número de empréstimo já cadastrado!', 'danger')
@@ -49,7 +70,11 @@ def create_emprestimo():
             livros = Livro.query.all()
             return render_template('emprestimos/create_emprestimo.html', usuarios=usuarios, livros=livros)
 
-        new_emprestimo = Emprestimo(numero_emprestimo=numero_emprestimo, usuario_id=usuario_id)
+        new_emprestimo = Emprestimo(
+            numero_emprestimo=numero_emprestimo,
+            usuario_id=usuario_id,
+            data_devolucao=datetime.strptime(data_devolucao, '%Y-%m-%d').date()
+        )
 
         # Adicionar os livros selecionados ao empréstimo
         for livro_id in livro_ids:
@@ -64,7 +89,7 @@ def create_emprestimo():
 
     usuarios = Usuario.query.all()
     livros = Livro.query.all()
-    return render_template('emprestimos/create_emprestimo.html', usuarios=usuarios, livros=livros)
+    return render_template('emprestimos/create_emprestimo.html', usuarios=usuarios, livros=livros, today=datetime.now().strftime('%Y-%m-%d'))
 
 @app.route('/update_emprestimo/<int:id>', methods=['GET', 'POST'])
 def update_emprestimo(id):
@@ -75,6 +100,7 @@ def update_emprestimo(id):
         numero_emprestimo = request.form['numero_emprestimo'].strip()
         usuario_id = request.form.get('usuario')
         livro_ids = request.form.getlist('livros')
+        data_devolucao = request.form.get('data_devolucao')
         
         # Validações
         if not numero_emprestimo:
@@ -95,6 +121,26 @@ def update_emprestimo(id):
             livros = Livro.query.all()
             return render_template('emprestimos/update_emprestimo.html', emprestimo=emprestimo, usuarios=usuarios, livros=livros)
         
+        if not data_devolucao:
+            flash('Data de devolução é obrigatória!', 'danger')
+            usuarios = Usuario.query.all()
+            livros = Livro.query.all()
+            return render_template('emprestimos/update_emprestimo.html', emprestimo=emprestimo, usuarios=usuarios, livros=livros)
+        
+        # Validar data de devolução não pode ser anterior à data atual
+        try:
+            data_dev = datetime.strptime(data_devolucao, '%Y-%m-%d').date()
+            if data_dev < datetime.now().date():
+                flash('Data de devolução não pode ser anterior à data atual!', 'danger')
+                usuarios = Usuario.query.all()
+                livros = Livro.query.all()
+                return render_template('emprestimos/update_emprestimo.html', emprestimo=emprestimo, usuarios=usuarios, livros=livros)
+        except ValueError:
+            flash('Data de devolução inválida!', 'danger')
+            usuarios = Usuario.query.all()
+            livros = Livro.query.all()
+            return render_template('emprestimos/update_emprestimo.html', emprestimo=emprestimo, usuarios=usuarios, livros=livros)
+        
         # Verificar número duplicado (exceto o próprio empréstimo)
         existing = Emprestimo.query.filter_by(numero_emprestimo=numero_emprestimo).first()
         if existing and existing.id != id:
@@ -105,6 +151,7 @@ def update_emprestimo(id):
         
         emprestimo.numero_emprestimo = numero_emprestimo
         emprestimo.usuario_id = usuario_id
+        emprestimo.data_devolucao = datetime.strptime(data_devolucao, '%Y-%m-%d').date()
         
         # Atualizar livros do empréstimo
         emprestimo.livros = []
@@ -119,7 +166,7 @@ def update_emprestimo(id):
 
     usuarios = Usuario.query.all()
     livros = Livro.query.all()
-    return render_template('emprestimos/update_emprestimo.html', emprestimo=emprestimo, usuarios=usuarios, livros=livros)
+    return render_template('emprestimos/update_emprestimo.html', emprestimo=emprestimo, usuarios=usuarios, livros=livros, today=datetime.now().strftime('%Y-%m-%d'))
 
 @app.route('/delete_emprestimo/<int:id>')
 def delete_emprestimo(id):
