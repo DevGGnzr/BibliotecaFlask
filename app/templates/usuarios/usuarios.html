@@ -7,64 +7,73 @@
 {% endblock %}
 
 {% block content %}
-<h1 class="mb-4">
-                    <i class="bi bi-person-circle text-success"></i> Usuários
-                </h1>
-                
-                <div class="d-flex gap-2 mb-3">
-                    <a href="{{ url_for('create_usuario') }}" class="btn btn-success">
-                        <i class="bi bi-person-plus-fill"></i> Novo Usuário
-                    </a>
-                    {% if usuarios %}
-                    <a href="{{ url_for('usuarios_pdf') }}" class="btn btn-danger" target="_blank">
-                        <i class="bi bi-file-pdf-fill"></i> Exportar PDF
-                    </a>
-                    {% endif %}
-                </div>
-                
-                {% if usuarios %}
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover">
-                        <thead class="table-success">
-                            <tr>
-                                <th>Nome</th>
-                                <th>Email</th>
-                                <th>Empréstimos</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for usuario in usuarios %}
-                                <tr>
-                                    <td><strong>{{ usuario.nome }}</strong></td>
-                                    <td><i class="bi bi-envelope-at-fill"></i> {{ usuario.email }}</td>
-                                    <td>
-                                        {% if usuario.emprestimos %}
-                                            <span class="badge bg-warning text-dark">{{ usuario.emprestimos|length }}</span>
-                                        {% else %}
-                                            <span class="badge bg-secondary">0</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <div class="btn-group" role="group">
-                                            <a href="{{ url_for('update_usuario', id=usuario.id) }}" class="btn btn-sm btn-outline-primary">
-                                                <i class="bi bi-pencil-square"></i> Editar
-                                            </a>
-                                            <a href="{{ url_for('delete_usuario', id=usuario.id) }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Tem certeza que deseja excluir o usuário {{ usuario.nome }}?')">
-                                                <i class="bi bi-trash3-fill"></i> Excluir
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                {% else %}
-                    <div class="alert alert-info">
-                        <i class="bi bi-info-circle-fill"></i> Nenhum usuário cadastrado ainda. Clique em "Novo Usuário" para adicionar.
-                    </div>
-                {% endif %}
-            </div>
+<div class="card shadow">
+    <div class="card-body">
+        <h1 class="mb-4" style="color: #6C0B18;">
+            <i class="bi bi-person-circle" style="color: #6C0B18;"></i> Usuários
+        </h1>
+
+        <div class="d-flex gap-2 mb-3">
+            <a href="{{ url_for('create_usuario') }}" class="btn btn-primary">
+                <i class="bi bi-person-plus-fill"></i> Novo Usuário
+            </a>
+            {% if usuarios %}
+            <a href="{{ url_for('usuarios_pdf') }}" class="btn btn-info" target="_blank">
+                <i class="bi bi-file-pdf-fill"></i> Exportar PDF
+            </a>
+            {% endif %}
         </div>
+
+        {% if usuarios %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Empréstimos</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for usuario in usuarios %}
+                    <tr>
+                        <td><strong>{{ usuario.nome }}</strong></td>
+                        <td><i class="bi bi-envelope-at-fill"></i> {{ usuario.email }}</td>
+                        <td>
+                            {% if usuario.emprestimos %}
+                            <span class="badge"
+                                style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); color: #047857; border: 1px solid #10b981;">{{
+                                usuario.emprestimos|length }}</span>
+                            {% else %}
+                            <span class="badge bg-secondary">0</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a href="{{ url_for('update_usuario', id=usuario.id) }}"
+                                    class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-pencil-square"></i> Editar
+                                </a>
+                                <a href="{{ url_for('delete_usuario', id=usuario.id) }}"
+                                    class="btn btn-sm btn-outline-danger"
+                                    onclick="return confirm('Tem certeza que deseja excluir o usuário {{ usuario.nome }}?')">
+                                    <i class="bi bi-trash3-fill"></i> Excluir
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert"
+            style="background: linear-gradient(135deg, #ffe8eb 0%, #ffd4d8 100%); color: #6C0B18; border-left: 4px solid #6C0B18;">
+            <i class="bi bi-info-circle-fill"></i> Nenhum usuário cadastrado ainda. Clique em "Novo Usuário" para
+            adicionar.
+        </div>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}

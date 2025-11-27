@@ -7,53 +7,56 @@
 {% endblock %}
 
 {% block content %}
-<h1 class="mb-4">
-                    <i class="bi bi-clipboard-check"></i> Editar Empréstimo
-                </h1>
-                
-                <form method="POST">
-                    <div class="mb-3">
-                        <label for="numero_emprestimo" class="form-label">Número do Empréstimo: <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="numero_emprestimo" name="numero_emprestimo" value="{{ emprestimo.numero_emprestimo }}" placeholder="Ex: EMP-001" required>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="usuario" class="form-label">Usuário: <span class="text-danger">*</span></label>
-                        <select class="form-select" id="usuario" name="usuario" required>
-                            {% for usuario in usuarios %}
-                                <option value="{{ usuario.id }}" {% if usuario.id == emprestimo.usuario_id %}selected{% endif %}>
-                                    {{ usuario.nome }} - {{ usuario.email }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Livros: <span class="text-danger">*</span> (selecione pelo menos um)</label>
-                        <div class="border rounded p-3" style="max-height: 300px; overflow-y: auto;">
-                            {% if livros %}
-                                {% for livro in livros %}
-                                    <div class="form-check mb-2">
-                                        <input class="form-check-input" type="checkbox" id="livro_{{ livro.id }}" name="livros" value="{{ livro.id }}" {% if livro in emprestimo.livros %}checked{% endif %}>
-                                        <label class="form-check-label" for="livro_{{ livro.id }}">
-                                            <strong>{{ livro.titulo }}</strong> - <em>{{ livro.autor }}</em> ({{ livro.ano_publicacao }})
-                                        </label>
-                                    </div>
-                                {% endfor %}
-                            {% else %}
-                                <div class="alert alert-warning mb-0">
-                                    Nenhum livro cadastrado.
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-warning">
-                            <i class="bi bi-arrow-clockwise"></i> Atualizar Empréstimo
-                        </button>
-                    </div>
-                </form>
+<h1 class="mb-4" style="color: #6C0B18;">
+    <i class="bi bi-clipboard-check" style="color: #6C0B18;"></i> Editar Empréstimo
+</h1>
+
+<form method="POST">
+    <div class="mb-3">
+        <label for="numero_emprestimo" class="form-label">Número do Empréstimo: <span
+                class="text-danger">*</span></label>
+        <input type="text" class="form-control" id="numero_emprestimo" name="numero_emprestimo"
+            value="{{ emprestimo.numero_emprestimo }}" placeholder="Ex: EMP-001" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="usuario" class="form-label">Usuário: <span class="text-danger">*</span></label>
+        <select class="form-select" id="usuario" name="usuario" required>
+            {% for usuario in usuarios %}
+            <option value="{{ usuario.id }}" {% if usuario.id==emprestimo.usuario_id %}selected{% endif %}>
+                {{ usuario.nome }} - {{ usuario.email }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Livros: <span class="text-danger">*</span> (selecione pelo menos um)</label>
+        <div class="border rounded p-3" style="max-height: 300px; overflow-y: auto;">
+            {% if livros %}
+            {% for livro in livros %}
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="livro_{{ livro.id }}" name="livros"
+                    value="{{ livro.id }}" {% if livro in emprestimo.livros %}checked{% endif %}>
+                <label class="form-check-label" for="livro_{{ livro.id }}">
+                    <strong>{{ livro.titulo }}</strong> - <em>{{ livro.autor }}</em> ({{ livro.ano_publicacao }})
+                </label>
             </div>
+            {% endfor %}
+            {% else %}
+            <div class="alert alert-danger mb-0">
+                Nenhum livro cadastrado.
+            </div>
+            {% endif %}
         </div>
+    </div>
+
+    <div class="d-grid gap-2">
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-arrow-clockwise"></i> Atualizar Empréstimo
+        </button>
+    </div>
+</form>
+</div>
+</div>
 {% endblock %}
