@@ -11,9 +11,16 @@
                     <i class="bi bi-calendar-check-fill text-warning"></i> Empréstimos
                 </h1>
                 
-                <a href="{{ url_for('create_emprestimo') }}" class="btn btn-warning mb-3">
-                    <i class="bi bi-plus-circle-fill"></i> Novo Empréstimo
-                </a>
+                <div class="d-flex gap-2 mb-3">
+                    <a href="{{ url_for('create_emprestimo') }}" class="btn btn-warning">
+                        <i class="bi bi-plus-circle-fill"></i> Novo Empréstimo
+                    </a>
+                    {% if emprestimos %}
+                    <a href="{{ url_for('emprestimos_pdf') }}" class="btn btn-danger" target="_blank">
+                        <i class="bi bi-file-pdf-fill"></i> Exportar PDF
+                    </a>
+                    {% endif %}
+                </div>
                 
                 {% if emprestimos %}
                 <div class="table-responsive">

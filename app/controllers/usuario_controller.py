@@ -1,6 +1,8 @@
 from flask import render_template, request, redirect, url_for, flash
 from app import app, db
 from app.models.models import Usuario
+from app.utils.pdf_utils import generate_pdf
+from datetime import datetime
 import re
 
 @app.route('/usuarios')
@@ -89,3 +91,22 @@ def delete_usuario(id):
     db.session.commit()
     flash(f'Usuário "{nome}" excluído com sucesso!', 'success')
     return redirect(url_for('usuarios'))
+
+@app.route('/usuarios/pdf')
+def usuarios_pdf():
+    """Exportar lista de usuários para PDF"""
+    usuarios = Usuario.query.all()
+    
+    context = {
+        'usuarios': usuarios,
+        'data_geracao': datetime.now().strftime('%d/%m/%Y às %H:%M'),
+        'ano_atual': datetime.now().year
+    }
+    
+    pdf = generate_pdf('usuarios/usuarios_pdf.html', context, filename='relatorio_usuarios.pdf')
+    
+    if pdf:
+        return pdf
+    else:
+        flash('Erro ao gerar o PDF!', 'danger')
+        return redirect(url_for('usuarios'))

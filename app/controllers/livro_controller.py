@@ -2,6 +2,8 @@ from flask import render_template, request, redirect, url_for, flash, send_file,
 from werkzeug.utils import secure_filename
 from app import app, db
 from app.models.models import Livro
+from app.utils.pdf_utils import generate_pdf
+from datetime import datetime
 import os
 import time
 import io
@@ -142,6 +144,25 @@ def capa_livro(id):
     )
     else:
         abort(404)
+@app.route('/livros/pdf')
+def livros_pdf():
+    """Exportar lista de livros para PDF"""
+    livros = Livro.query.all()
+    
+    context = {
+        'livros': livros,
+        'data_geracao': datetime.now().strftime('%d/%m/%Y às %H:%M'),
+        'ano_atual': datetime.now().year
+    }
+    
+    pdf = generate_pdf('livros/livros_pdf.html', context, filename='relatorio_livros.pdf')
+    
+    if pdf:
+        return pdf
+    else:
+        flash('Erro ao gerar o PDF!', 'danger')
+        return redirect(url_for('livros'))
+
 @app.route('/delete_livro/<int:id>')
 def delete_livro(id):
     """Deletar um livro"""

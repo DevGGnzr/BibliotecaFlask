@@ -1,6 +1,8 @@
 from flask import render_template, request, redirect, url_for, flash
 from app import app, db
 from app.models.models import Emprestimo, Usuario, Livro
+from app.utils.pdf_utils import generate_pdf
+from datetime import datetime
 
 @app.route('/')
 def index():
@@ -128,3 +130,22 @@ def delete_emprestimo(id):
     db.session.commit()
     flash(f'Empréstimo "{numero}" excluído com sucesso!', 'success')
     return redirect(url_for('emprestimos'))
+
+@app.route('/emprestimos/pdf')
+def emprestimos_pdf():
+    """Exportar lista de empréstimos para PDF"""
+    emprestimos = Emprestimo.query.all()
+    
+    context = {
+        'emprestimos': emprestimos,
+        'data_geracao': datetime.now().strftime('%d/%m/%Y às %H:%M'),
+        'ano_atual': datetime.now().year
+    }
+    
+    pdf = generate_pdf('emprestimos/emprestimos_pdf.html', context, filename='relatorio_emprestimos.pdf')
+    
+    if pdf:
+        return pdf
+    else:
+        flash('Erro ao gerar o PDF!', 'danger')
+        return redirect(url_for('emprestimos'))
