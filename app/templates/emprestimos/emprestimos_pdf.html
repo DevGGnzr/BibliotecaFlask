@@ -4,117 +4,93 @@
     <meta charset="UTF-8">
     <title>Relatório de Empréstimos</title>
     <style>
-        @page {
-            size: A4 landscape;
-            margin: 2cm;
-        }
-        
         body {
             font-family: Arial, sans-serif;
-            font-size: 9pt;
-            color: #333;
+            margin: 40px;
         }
         
         .header {
             text-align: center;
             margin-bottom: 30px;
-            border-bottom: 2px solid #dc3545;
-            padding-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #333;
         }
         
         .header h1 {
-            color: #dc3545;
-            font-size: 24pt;
-            margin: 0 0 5px 0;
+            color: #333;
+            margin: 0;
         }
         
         .header p {
-            margin: 0;
             color: #666;
-            font-size: 10pt;
+            margin: 5px 0;
         }
         
-        .info-box {
-            background-color: #f8f9fa;
+        .info {
+            background-color: #f0f0f0;
             padding: 10px;
-            border-radius: 5px;
             margin-bottom: 20px;
-            border-left: 4px solid #dc3545;
+            text-align: center;
+            font-weight: bold;
         }
         
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            table-layout: fixed;
         }
         
-        table thead {
-            background-color: #dc3545;
+        th {
+            background-color: #333;
             color: white;
-        }
-        
-        table th {
-            padding: 10px;
+            padding: 8px 5px;
             text-align: left;
+            font-size: 9px;
             font-weight: bold;
-            font-size: 8pt;
+            word-wrap: break-word;
         }
         
-        table td {
-            padding: 8px;
+        td {
+            padding: 6px 5px;
             border-bottom: 1px solid #ddd;
-            font-size: 8pt;
+            font-size: 8px;
+            vertical-align: top;
+            word-wrap: break-word;
         }
         
-        table tbody tr:nth-child(even) {
-            background-color: #f8f9fa;
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
         }
         
-        .livros-list {
-            font-size: 7pt;
-            color: #555;
+        .livros-lista {
             margin: 0;
             padding-left: 15px;
+            font-size: 7px;
         }
         
-        .livros-list li {
-            margin-bottom: 2px;
-        }
-        
-        .livros-badge {
-            background-color: #0dcaf0;
-            color: #000;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 7pt;
-            font-weight: bold;
+        .livros-lista li {
+            margin-bottom: 3px;
         }
         
         .footer {
             margin-top: 30px;
-            text-align: center;
-            font-size: 8pt;
-            color: #666;
-            border-top: 1px solid #ddd;
             padding-top: 10px;
-        }
-        
-        .total-emprestimos {
-            font-weight: bold;
-            color: #dc3545;
-            font-size: 11pt;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            font-size: 10px;
+            color: #666;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>📋 Relatório de Empréstimos</h1>
-        <p>Sistema de Gerenciamento de Biblioteca</p>
-        <p>Data de Geração: {{ data_geracao }}</p>
+        <h1>Relatório de Empréstimos</h1>
+        <p>Sistema de Biblioteca</p>
+        <p>{{ data_geracao }}</p>
     </div>
     
-    <div class="info-box">
-        <p><span class="total-emprestimos">Total de Empréstimos Registrados: {{ emprestimos|length }}</span></p>
+    <div class="info">
+        Total de Empréstimos: {{ emprestimos|length }}
     </div>
     
     {% if emprestimos %}
@@ -122,30 +98,28 @@
         <thead>
             <tr>
                 <th style="width: 15%;">Nº Empréstimo</th>
-                <th style="width: 25%;">Usuário</th>
+                <th style="width: 22%;">Usuário</th>
                 <th style="width: 25%;">Email</th>
-                <th style="width: 10%;">Qtd. Livros</th>
-                <th style="width: 25%;">Livros</th>
+                <th style="width: 10%; text-align: center;">Qtd.</th>
+                <th style="width: 28%;">Livros Emprestados</th>
             </tr>
         </thead>
         <tbody>
             {% for emprestimo in emprestimos %}
             <tr>
-                <td><strong>{{ emprestimo.numero_emprestimo }}</strong></td>
-                <td>{{ emprestimo.usuario.nome }}</td>
-                <td>{{ emprestimo.usuario.email }}</td>
-                <td style="text-align: center;">
-                    <span class="livros-badge">{{ emprestimo.livros|length }}</span>
-                </td>
-                <td>
+                <td style="width: 15%;">{{ emprestimo.numero_emprestimo }}</td>
+                <td style="width: 22%;">{{ emprestimo.usuario.nome }}</td>
+                <td style="width: 25%;">{{ emprestimo.usuario.email }}</td>
+                <td style="width: 10%; text-align: center;">{{ emprestimo.livros|length }}</td>
+                <td style="width: 28%;">
                     {% if emprestimo.livros %}
-                        <ul class="livros-list">
+                        <ul class="livros-lista">
                             {% for livro in emprestimo.livros %}
-                                <li>{{ livro.titulo }} ({{ livro.autor }})</li>
+                                <li>{{ livro.titulo }}</li>
                             {% endfor %}
                         </ul>
                     {% else %}
-                        <em>Nenhum livro</em>
+                        -
                     {% endif %}
                 </td>
             </tr>
@@ -153,12 +127,11 @@
         </tbody>
     </table>
     {% else %}
-    <p style="text-align: center; color: #666; margin-top: 50px;">Nenhum empréstimo registrado no sistema.</p>
+    <p style="text-align: center;">Nenhum empréstimo registrado.</p>
     {% endif %}
     
     <div class="footer">
-        <p>Relatório gerado automaticamente pelo Sistema de Biblioteca</p>
-        <p>© {{ ano_atual }} - Todos os direitos reservados</p>
+        <p>© {{ ano_atual }} - Sistema de Biblioteca</p>
     </div>
 </body>
 </html>

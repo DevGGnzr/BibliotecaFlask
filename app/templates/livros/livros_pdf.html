@@ -4,151 +4,110 @@
     <meta charset="UTF-8">
     <title>Relatório de Livros</title>
     <style>
-        @page {
-            size: A4;
-            margin: 2cm;
-        }
-        
         body {
             font-family: Arial, sans-serif;
-            font-size: 10pt;
-            color: #333;
+            margin: 40px;
         }
         
         .header {
             text-align: center;
             margin-bottom: 30px;
-            border-bottom: 2px solid #0d6efd;
-            padding-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #333;
         }
         
         .header h1 {
-            color: #0d6efd;
-            font-size: 24pt;
-            margin: 0 0 5px 0;
+            color: #333;
+            margin: 0;
         }
         
         .header p {
-            margin: 0;
             color: #666;
-            font-size: 10pt;
+            margin: 5px 0;
         }
         
-        .info-box {
-            background-color: #f8f9fa;
+        .info {
+            background-color: #f0f0f0;
             padding: 10px;
-            border-radius: 5px;
             margin-bottom: 20px;
-            border-left: 4px solid #0d6efd;
+            text-align: center;
+            font-weight: bold;
         }
         
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            table-layout: fixed;
         }
         
-        table thead {
-            background-color: #0d6efd;
+        th {
+            background-color: #333;
             color: white;
-        }
-        
-        table th {
-            padding: 10px;
+            padding: 8px 5px;
             text-align: left;
+            font-size: 9px;
             font-weight: bold;
-            font-size: 9pt;
+            word-wrap: break-word;
         }
         
-        table td {
-            padding: 8px;
+        td {
+            padding: 6px 5px;
             border-bottom: 1px solid #ddd;
-            font-size: 9pt;
+            font-size: 8px;
+            vertical-align: top;
+            word-wrap: break-word;
         }
         
-        table tbody tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-        
-        .categoria-badge {
-            background-color: #0dcaf0;
-            color: white;
-            padding: 3px 8px;
-            border-radius: 3px;
-            font-size: 8pt;
-        }
-        
-        .emprestimos-badge {
-            background-color: #ffc107;
-            color: #000;
-            padding: 3px 8px;
-            border-radius: 3px;
-            font-size: 8pt;
-            font-weight: bold;
-        }
-        
-        .no-emprestimos {
-            background-color: #6c757d;
-            color: white;
-            padding: 3px 8px;
-            border-radius: 3px;
-            font-size: 8pt;
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
         }
         
         .footer {
             margin-top: 30px;
-            text-align: center;
-            font-size: 8pt;
-            color: #666;
-            border-top: 1px solid #ddd;
             padding-top: 10px;
-        }
-        
-        .total-livros {
-            font-weight: bold;
-            color: #0d6efd;
-            font-size: 11pt;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            font-size: 10px;
+            color: #666;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>📚 Relatório de Livros</h1>
-        <p>Sistema de Gerenciamento de Biblioteca</p>
-        <p>Data de Geração: {{ data_geracao }}</p>
+        <h1>Relatório de Livros</h1>
+        <p>Sistema de Biblioteca</p>
+        <p>{{ data_geracao }}</p>
     </div>
     
-    <div class="info-box">
-        <p><span class="total-livros">Total de Livros Cadastrados: {{ livros|length }}</span></p>
+    <div class="info">
+        Total de Livros: {{ livros|length }}
     </div>
     
     {% if livros %}
     <table>
         <thead>
             <tr>
-                <th style="width: 30%;">Título</th>
+                <th style="width: 28%;">Título</th>
                 <th style="width: 20%;">Autor</th>
-                <th style="width: 15%;">ISBN</th>
-                <th style="width: 10%;">Ano</th>
-                <th style="width: 15%;">Categoria</th>
-                <th style="width: 10%;">Empréstimos</th>
+                <th style="width: 16%;">ISBN</th>
+                <th style="width: 8%; text-align: center;">Ano</th>
+                <th style="width: 18%;">Categoria</th>
+                <th style="width: 10%; text-align: center;">Emp.</th>
             </tr>
         </thead>
         <tbody>
             {% for livro in livros %}
             <tr>
-                <td><strong>{{ livro.titulo }}</strong></td>
-                <td>{{ livro.autor }}</td>
-                <td>{{ livro.isbn }}</td>
-                <td>{{ livro.ano_publicacao }}</td>
-                <td>
-                    <span class="categoria-badge">{{ livro.categoria }}</span>
-                </td>
-                <td style="text-align: center;">
+                <td style="width: 28%;">{{ livro.titulo }}</td>
+                <td style="width: 20%;">{{ livro.autor }}</td>
+                <td style="width: 16%;">{{ livro.isbn }}</td>
+                <td style="width: 8%; text-align: center;">{{ livro.ano_publicacao }}</td>
+                <td style="width: 18%;">{{ livro.categoria }}</td>
+                <td style="width: 10%; text-align: center;">
                     {% if livro.emprestimos %}
-                        <span class="emprestimos-badge">{{ livro.emprestimos|length }}</span>
+                        {{ livro.emprestimos|length }}
                     {% else %}
-                        <span class="no-emprestimos">0</span>
+                        0
                     {% endif %}
                 </td>
             </tr>
@@ -156,12 +115,11 @@
         </tbody>
     </table>
     {% else %}
-    <p style="text-align: center; color: #666; margin-top: 50px;">Nenhum livro cadastrado no sistema.</p>
+    <p style="text-align: center;">Nenhum livro cadastrado.</p>
     {% endif %}
     
     <div class="footer">
-        <p>Relatório gerado automaticamente pelo Sistema de Biblioteca</p>
-        <p>© {{ ano_atual }} - Todos os direitos reservados</p>
+        <p>© {{ ano_atual }} - Sistema de Biblioteca</p>
     </div>
 </body>
 </html>

@@ -33,6 +33,6 @@ def generate_pdf(template_name, context, filename='relatorio.pdf'):
     pdf_buffer.seek(0)
     response = make_response(pdf_buffer.read())
     response.headers['Content-Type'] = 'application/pdf'
-    response.headers['Content-Disposition'] = f'inline; filename={filename}'
+    response.headers['Content-Disposition'] = f'attachment; filename={filename}'
     
     return response
